@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+        
+    <title>Dropdown Testing</title>
+
+    <!-- Boostrap CSS -->
+    <link href="../static/css/bootstrap.min.css" rel="stylesheet">
+
+</head>
+
+<body style="background-color:#EBF5FB">
+	  
+  <!-- Form for user to select options and submit -->
+
+  <h2>&nbsp Couch Checkup</h2>
+  <p>&nbsp &nbsp &nbsp &nbsp Please enter your measured blood pressures and heart rate<p>
+
+  <form method="GET" action="/output">
+    &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp
+	  <label for="patient_id">Patient Id</label>
+	  <input type="text" id="patient_id" name="patient_id" placeholder="1" />
+        
+          <br><br>
+        
+	    &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp
+	  <label for="patient_id">systolic blood pressure</label>
+	  <input type="text" id="patient_id" name="sys_bp" placeholder="130" />
+
+	  &nbsp &nbsp &nbsp &nbsp &nbsp
+	  &nbsp &nbsp &nbsp &nbsp &nbsp
+	  <label for="patient_id">diastolic blood pressure</label>
+	  <input type="text" id="patient_id" name="dia_bp" placeholder="85" />
+        
+          <br><br>
+
+	  &nbsp
+          <input type="submit" name="button" value="View Results"/>
+        
+      </form>
+
+    </div>
+
+</body>
+</html>

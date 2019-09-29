@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+        
+    <title>Dropdown Testing</title>
+
+    <!-- Boostrap CSS -->
+    <link href="../static/css/bootstrap.min.css" rel="stylesheet">
+
+      <style>
+
+/* Create three equal columns that floats next to each other */
+.column {
+  float: left;
+  width: 33.33%;
+  padding: 1px; 
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+</style>
+
+</head>
+
+<body style="background-color:#EBF5FB">
+  <!-- Form for user to select options and submit -->
+  <h2>&nbsp Couch Checkup</h2>
+   <p>&nbsp &nbsp &nbsp &nbsp Please enter your measured blood pressures and heart rate<p>
+	<form method="POST" action="/output">
+        &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp
+	  <label for="patient_id">Patient Id</label>
+	  <input type="text" id="patient_id" name="patient_id" placeholder={{patient_id}} />
+        
+          <br><br>
+        
+	    &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp
+	  <label for="patient_id">systolic blood pressure</label>
+	  <input type="text" id="patient_id" name="sys_bp" placeholder={{sys_bp}} />
+
+	  &nbsp &nbsp &nbsp &nbsp &nbsp
+	  &nbsp &nbsp &nbsp &nbsp &nbsp
+	  <label for="patient_id">diastolic blood pressure</label>
+	  <input type="text" id="patient_id" name="dia_bp" placeholder={{dia_bp}} />
+        
+          <br><br>
+	  </form>
+    
+	  <!-- Python figure -->
+	  <div class="row">
+	    <div class="column" > </div>
+	    <div class="column"> 
+	{% if high_bp %}
+      <div style="background-color:#EC7063;color:white;text-align:center">
+	<h3>Your blood pressure is higher than expected</h3>
+	<h3>please see your physician</h3>
+      </div> 
+      {% else %}
+      <div style="background-color:#ABEBC6;color:white;text-align:center">
+	<h3>Your blood pressure </h3>
+	<h3> is normal today</h3>
+      </div>
+      {% endif %}
+	    </div>
+	    <div class="column"> </div>
+	  </div>
+
+      {% if image != None %}
+    <img src="data:image/png;base64,{{ bp_image }}">
+      {% endif %}
+
+      <form method="GET" action="/restart">
+	  &nbsp
+        <input type="submit" name="button" value="Reset"/>
+      </form>
+
+</body>
+</html>
