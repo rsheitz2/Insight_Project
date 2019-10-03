@@ -1,19 +1,12 @@
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
 import numpy as np
+from helperfunctions import is_high_bp
 
-def high_pressure_cal(sys_pressure, dia_pressure, heart_rate):
-    if (float(sys_pressure) > 160):
-        return True
 
-    return False
-
-def is_high_bp(y, y_pred, shift, rmse):
-    if y > y_pred + shift + rmse:
-        return True
-    return False
-
-def lin_model(X, y, ynow, time_now, shift):
+def lin_model(d_input, shift):
+    X, y = d_input['X'], d_input['Y']
+    ynow, time_now = d_input['bp'], d_input['now']
     lin_model = LinearRegression()
 
     lin_model.fit(X, y)
@@ -35,4 +28,12 @@ def lin_model(X, y, ynow, time_now, shift):
             high_x.append(x_true)
             high_y.append(y_true)
 
-    return high_bp, high_x, high_y
+    x_min, x_max = X.min(), X.max()
+    y_min, y_max = m*x_min + b + 20, m*x_max + b + 20
+    y_min, y_max = y_min.squeeze(), y_max.squeeze()
+    x_max_values, y_max_values = [x_min, x_max], [y_min, y_max]
+
+    d_output = {'high_bp': high_bp, 'high_x': high_x, 'high_y': high_y,
+                'x_max_values': x_max_values, 'y_max_values': y_max_values}
+
+    return d_output
