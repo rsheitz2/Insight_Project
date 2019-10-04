@@ -81,34 +81,43 @@
 -->
 
 	<!-- Python figure -->
-	  <div class="row">
-	    <div class="column" > </div>
-	    <div class="column"> 
-	{% if high_bp %}
-      <div style="background-color:#EC7063;color:white;text-align:center">
-	<h3>Your blood pressure is higher than expected</h3>
-	<h3>please see your physician</h3>
-      </div> 
-      {% endif %}
+	<div class="row">
+	  <div class="column" > </div>
+	  <div class="column"> 
+	    {% if high_bp %}
+	    <div style="background-color:#EC7063;color:white;text-align:center">
+	      <h3>Your blood pressure is higher than expected</h3>
+	      <h3>please see your physician</h3>
+	    </div> 
+	    {% endif %}
+      
 	    </div>
 	    <div class="column"> </div>
 	  </div>
 
 	  <div class="row">
-            <div class="col-md-4">
+            <div class="col-md-4" align="right">
 	      {{ bp_img_sys|safe }}
-	  </div>
-	  <div class="col-md-4">
-	    {{ bp_tot_img_sys|safe }}
+	    </div>
+	    <div class="col-md-4">
+	      
+	    </div>
+	    <div class="col-md-4">
+	    <br> <br>
+	    {{ bp_img_dia|safe }}
 	  </div>
 	  </div>
 
 	  <div class="row">
             <div class="col-md-4" align="center">
-	      {{ bp_img_dia|safe }}
-	  </div>
-	  <div class="col-md-4">
-	    {{ bp_tot_img_dia|safe }}
+	      <h3> Your history </h3>
+	      {{ bp_tot_img_sys|safe }}	    
+	    </div>
+	    <div class="col-md-4">
+	    </div>
+	    <div class="col-md-4">
+	      <br> <br>
+		{{ bp_tot_img_dia|safe }}
 	  </div>
 	  </div>
 

@@ -28,7 +28,8 @@ def prophet_model(d_input, shift, which_bp, patient_id):
         y_max_values.append(y_pred+shift+rmse)
 
     d_output = {'high_bp': high_bp, 'high_x': high_x, 'high_y': high_y,
-                'x_max_values': x_max_values, 'y_max_values': y_max_values}
+                'x_max_values': x_max_values, 'y_max_values': y_max_values,
+                'forecast': ypred_now, 'rmse': rmse}
 
     return d_output
     

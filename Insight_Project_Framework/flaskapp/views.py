@@ -29,36 +29,44 @@ def Make_Plot(d_input, d_model, y_label, total=False):
     bp, time_now = d_input['bp'], d_input['now']
     x_high, y_high = d_model['high_x'], d_model['high_y']
     x_max_values, y_max_values = d_model['x_max_values'],d_model['y_max_values']
+    yhat, rmse = d_model['forecast'], d_model['rmse']
 
-    #X_date = pd.to_datetime(X.squeeze(), unit='D')
-
-
-    
-    figsize=(3, 4)
+    #figsize=(3, 4)
+    w, h = plt.figaspect(1.4)
     if total:
-        figsize=(6, 4)
+        w, h = plt.figaspect(0.8)
         
-    #fig, ax = plt.subplots(figsize=figsize)
-    #fig, ax = plt.subplots()
     linewidth, markersize = 0.2, 12
 
-    fig, ax = plt.subplots(figsize=figsize)
+    #fig, ax = plt.subplots(figsize=figsize)
+    
+    fig, ax = plt.subplots(figsize=(w, h))
     
     plt.suptitle('Your past blood pressures', fontsize=16)
-    plt.plot(time_now, bp, 'co', label='todays recording', markersize=markersize)
+    plt.plot(time_now, bp, 'co', label='today '+y_label, markersize=markersize)
     plt.plot(time_now, bp, 'ko')
     plt.plot(time_now, bp, 'k+', markersize=2*markersize)
+
+    print (yhat, rmse)
+
+    if not total:
+        plt.plot([time_now+1, time_now+3], [yhat, yhat], 'c')
+        plt.plot([time_now+2, time_now+2], [yhat, yhat+rmse], 'c')
+        plt.plot([time_now+1, time_now+3], [yhat+rmse, yhat+rmse], 'c')
+        plt.plot([time_now+2, time_now+2], [yhat+rmse, yhat+rmse+20], 'k')
+    #plt.plot([time_now, time_now], [bp, bp+7], 'c-')
+    #plt.plot([time_now, time_now], [bp+7, bp+27], 'b-')
 
     if total:
         plt.plot(X, Y, 'o--', linewidth=linewidth, label='past recordings')
         if len(x_high) > 0:
             plt.plot(x_high, y_high, 'ro', label='high pressures')
-        plt.plot(x_max_values, y_max_values, 'ro')
+        plt.plot(x_max_values, y_max_values, 'k--')
     
     #ax.plot([X.min(), time_now], [bp, bp], 'c--', linewidth=4)
     
-    plt.xlabel('time (days)', fontsize=18)
-    plt.ylabel(y_label)
+    #plt.xlabel('time', fontsize=20, labelpad=-1)
+    plt.ylabel(y_label, fontsize=20, labelpad=-5)
 
     my_xticks, x_vals = [], []
     time_now_date = Num_To_Time(time_now)
@@ -77,10 +85,13 @@ def Make_Plot(d_input, d_model, y_label, total=False):
     else:
         my_xticks.append(time_now_date.strftime("%Y/%m/%d"))
         x_vals.append(time_now)
-    
+
+    if not total:
+        #plt.ylim(yhat-5, yhat+rmse+25)
+        plt.xlim(time_now-2, time_now+5)
     plt.xticks(x_vals, my_xticks)
-    #if x_zoomed:
-    #    ax.set_xlim([time_now - 10, time_now + 10])
+    plt.xticks(fontsize=20)
+    plt.yticks(fontsize=20)
     plt.legend()
 
     return mpld3.fig_to_html(fig)
@@ -140,7 +151,7 @@ def user_results():
     bp_img_sys = Make_Plot(d_sys_input, d_sys_model, 'systolic')
     bp_tot_img_sys = Make_Plot(d_sys_input, d_sys_model, 'systolic', True)
     bp_img_dia = Make_Plot(d_dia_input, d_dia_model, 'diastolic')
-    bp_tot_img_dia = Make_Plot(d_dia_input, d_dia_model, 'diatolic', True)
+    bp_tot_img_dia = Make_Plot(d_dia_input, d_dia_model, 'diastolic', True)
     
     return render_template('output.html',
                            bp_img_sys=bp_img_sys, bp_tot_img_sys=bp_tot_img_sys,
