@@ -1,20 +1,17 @@
-import pickle
-from fbprophet import Prophet
 from sklearn.metrics import mean_squared_error
 import numpy as np
 from helperfunctions import is_high_bp
+import pandas as pd
 
 def prophet_model(d_input, shift, which_bp, patient_id):
-    m = pickle.load(open('/Users/robertheitz/Documents/DataSci/Insight/DuringInsight/DevSetup/FlaskSetup/MyStarterApp/PatientData/Sav/{}_patient{}.sav'.format(which_bp, patient_id), 'rb'))
     X, y = d_input['X'], d_input['Y']
     ynow, time_now = d_input['bp'], d_input['now']
 
-    future = m.make_future_dataframe(periods=1, freq='D')
-    forecast = m.predict(future)
+    forecast = pd.read_csv('/Users/robertheitz/Documents/DataSci/Insight/Insight_Project/Insight_Project_Framework/Forecasts/{}_patient{}.csv'.format(which_bp, patient_id))
 
-    ypred_now = forecast['yhat'].iloc[-1]
-    yhat = forecast['yhat'].iloc[:-1].values
-    rmse = (forecast['yhat_upper'] - forecast['yhat_lower']).iloc[:-1].mean()
+    ypred_now = forecast['yhat'].iloc[-10]
+    yhat = forecast['yhat'].iloc[:-10].values
+    rmse = (forecast['yhat_upper'] - forecast['yhat_lower']).iloc[:-10].mean()
     rmse = rmse/2.0
     high_bp = is_high_bp(ynow, ypred_now, shift, rmse)
 
