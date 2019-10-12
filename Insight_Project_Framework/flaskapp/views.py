@@ -43,25 +43,35 @@ def Make_Plot(d_input, d_model, y_label, total=False):
     fig, ax = plt.subplots(figsize=(w, h))
     
     plt.suptitle('Your past blood pressures', fontsize=16)
-    plt.plot(time_now, bp, 'co', label='today '+y_label, markersize=markersize)
-    plt.plot(time_now, bp, 'ko')
+    plt.plot(time_now, bp, 'co', markersize=markersize)
+    plt.plot(time_now, bp, 'ko', label='today '+y_label)
     plt.plot(time_now, bp, 'k+', markersize=2*markersize)
 
-    print (yhat, rmse)
-
     if not total:
-        plt.plot([time_now+1, time_now+3], [yhat, yhat], 'c')
-        plt.plot([time_now+2, time_now+2], [yhat, yhat+rmse], 'c')
-        plt.plot([time_now+1, time_now+3], [yhat+rmse, yhat+rmse], 'c')
-        plt.plot([time_now+2, time_now+2], [yhat+rmse, yhat+rmse+20], 'k')
+        #plt.plot([time_now+1, time_now+3], [yhat, yhat], 'c')
+        plt.plot([time_now+1, time_now+3], [yhat, yhat], 'b', linewidth=6,
+                 label='forecast')
+        plt.plot([time_now+1.25, time_now+2.75], [yhat+rmse, yhat+rmse], 'c',
+                 label='68% confidence', linewidth=6)
+        if y_label == 'systolic':
+            #plt.plot([time_now+2, time_now+2], [yhat+rmse, yhat+rmse+20], 'k')
+            plt.plot([time_now+1.5, time_now+2.5], [yhat+rmse+20, yhat+rmse+20], 'r',
+                     label='anomaly', linewidth=6)
+            plt.plot([time_now+2, time_now+2], [yhat, yhat+rmse+20], 'k--')
+        else:
+            #plt.plot([time_now+2, time_now+2], [yhat+rmse, yhat+rmse+10], 'k')
+            plt.plot([time_now+1.5, time_now+2.5], [yhat+rmse+10, yhat+rmse+10], 'r',
+                     label='anomaly', linewidth=6)
+            plt.plot([time_now+2, time_now+2], [yhat, yhat+rmse+10], 'k--')
+
     #plt.plot([time_now, time_now], [bp, bp+7], 'c-')
     #plt.plot([time_now, time_now], [bp+7, bp+27], 'b-')
 
     if total:
-        plt.plot(X, Y, 'o--', linewidth=linewidth, label='past recordings')
+        plt.plot(X, Y, 'o', linewidth=linewidth, label='past recordings')
         if len(x_high) > 0:
             plt.plot(x_high, y_high, 'ro', label='high pressures')
-        plt.plot(x_max_values, y_max_values, 'k--')
+        plt.plot(x_max_values, y_max_values, 'r--')
     
     #ax.plot([X.min(), time_now], [bp, bp], 'c--', linewidth=4)
     
