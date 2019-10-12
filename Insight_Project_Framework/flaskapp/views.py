@@ -5,7 +5,6 @@ from io import BytesIO
 import matplotlib.pyplot as plt
 import base64
 import matplotlib
-from linear_model import lin_model
 from prophet_model import prophet_model
 import mpld3
 from mpld3 import plugins
@@ -132,7 +131,8 @@ def user_results():
     except TypeError:
         pass
 
-    df = pd.read_csv('/Users/robertheitz/Documents/DataSci/Insight/DuringInsight/DevSetup/FlaskSetup/MyStarterApp/PatientData/patients_all.csv')
+    #df = pd.read_csv('/Users/robertheitz/Documents/DataSci/Insight/DuringInsight/DevSetup/FlaskSetup/MyStarterApp/PatientData/patients_all.csv')
+    df = pd.read_csv('/home/ubuntu/patients_all.csv')
 
     patient_id = np.sort(df['patient'].unique())[patient_id - 1]
     df_patient = df[df['patient'] == patient_id][['systolic', 'diastolic', 'index_time']]
