@@ -1,27 +1,15 @@
 from flaskapp import app
 from flask import Flask, Markup, render_template, request, send_file, redirect
 import pandas as pd
-from io import BytesIO
 import matplotlib.pyplot as plt
-import base64
 import matplotlib
-from prophet_model import prophet_model
-import mpld3
-from mpld3 import plugins
+from mpld3 import plugins, fig_to_html
 import numpy as np
-from datetime import timedelta 
+import os
+from helperfunctions import Num_To_Time
+from prophet_model import prophet_model
 
-# Not sure what this does but fixes NSView.m Assertion failed error
 matplotlib.use('Agg')
-
-
-def Num_To_Time(num):
-    num = num/2
-    num // 1
-    time_date = pd.to_datetime(num, unit='D')
-    time_date = time_date + timedelta(days=17314)
-
-    return time_date
 
 def Make_Plot(d_input, d_model, y_label, total=False):
     X, Y = d_input['X'], d_input['Y']
@@ -30,15 +18,12 @@ def Make_Plot(d_input, d_model, y_label, total=False):
     x_max_values, y_max_values = d_model['x_max_values'],d_model['y_max_values']
     yhat, rmse = d_model['forecast'], d_model['rmse']
 
-    #figsize=(3, 4)
     w, h = plt.figaspect(1.4)
     if total:
         w, h = plt.figaspect(0.8)
         
     linewidth, markersize = 0.2, 12
 
-    #fig, ax = plt.subplots(figsize=figsize)
-    
     fig, ax = plt.subplots(figsize=(w, h))
     
     plt.suptitle('Your past blood pressures', fontsize=16)
@@ -46,36 +31,25 @@ def Make_Plot(d_input, d_model, y_label, total=False):
     plt.plot(time_now, bp, 'ko', label='today '+y_label)
     plt.plot(time_now, bp, 'k+', markersize=2*markersize)
 
-    if not total:
-        #plt.plot([time_now+1, time_now+3], [yhat, yhat], 'c')
-        plt.plot([time_now+1, time_now+3], [yhat, yhat], 'b', linewidth=6,
-                 label='forecast')
-        plt.plot([time_now+1.25, time_now+2.75], [yhat+rmse, yhat+rmse], 'c',
-                 label='68% confidence', linewidth=6)
-        if y_label == 'systolic':
-            #plt.plot([time_now+2, time_now+2], [yhat+rmse, yhat+rmse+20], 'k')
-            plt.plot([time_now+1.5, time_now+2.5], [yhat+rmse+20, yhat+rmse+20], 'r',
-                     label='anomaly', linewidth=6)
-            plt.plot([time_now+2, time_now+2], [yhat, yhat+rmse+20], 'k--')
-        else:
-            #plt.plot([time_now+2, time_now+2], [yhat+rmse, yhat+rmse+10], 'k')
-            plt.plot([time_now+1.5, time_now+2.5], [yhat+rmse+10, yhat+rmse+10], 'r',
-                     label='anomaly', linewidth=6)
-            plt.plot([time_now+2, time_now+2], [yhat, yhat+rmse+10], 'k--')
-
-    #plt.plot([time_now, time_now], [bp, bp+7], 'c-')
-    #plt.plot([time_now, time_now], [bp+7, bp+27], 'b-')
-
     if total:
         plt.plot(X, Y, 'o', linewidth=linewidth, label='past recordings')
         if len(x_high) > 0:
             plt.plot(x_high, y_high, 'ro', label='high pressures')
         plt.plot(x_max_values, y_max_values, 'r--')
-    
-    #ax.plot([X.min(), time_now], [bp, bp], 'c--', linewidth=4)
-    
-    #plt.xlabel('time', fontsize=20, labelpad=-1)
-    plt.ylabel(y_label, fontsize=20, labelpad=-5)
+        
+    else:
+        plt.plot([time_now+1, time_now+3], [yhat, yhat], 'b', linewidth=6,
+                 label='forecast')
+        plt.plot([time_now+1.25, time_now+2.75], [yhat+rmse, yhat+rmse], 'c',
+                 label='68% confidence', linewidth=6)
+        if y_label == 'systolic':
+            plt.plot([time_now+1.5, time_now+2.5], [yhat+rmse+20, yhat+rmse+20], 'r',
+                     label='anomaly', linewidth=6)
+            plt.plot([time_now+2, time_now+2], [yhat, yhat+rmse+20], 'k--')
+        else:
+            plt.plot([time_now+1.5, time_now+2.5], [yhat+rmse+10, yhat+rmse+10], 'r',
+                     label='anomaly', linewidth=6)
+            plt.plot([time_now+2, time_now+2], [yhat, yhat+rmse+10], 'k--')
 
     my_xticks, x_vals = [], []
     time_now_date = Num_To_Time(time_now)
@@ -94,16 +68,15 @@ def Make_Plot(d_input, d_model, y_label, total=False):
     else:
         my_xticks.append(time_now_date.strftime("%Y/%m/%d"))
         x_vals.append(time_now)
-
-    if not total:
-        #plt.ylim(yhat-5, yhat+rmse+25)
         plt.xlim(time_now-2, time_now+5)
+        
     plt.xticks(x_vals, my_xticks)
     plt.xticks(fontsize=20)
+    plt.ylabel(y_label, fontsize=20, labelpad=-5)
     plt.yticks(fontsize=20)
     plt.legend()
 
-    return mpld3.fig_to_html(fig)
+    return fig_to_html(fig)
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -116,7 +89,6 @@ def user_input():
 @app.route('/output')
 def user_results():
     
-    # Get values from form
     patient_id = request.args.get('patient_id')
     sys_bp = request.args.get('sys_bp')
     dia_bp = request.args.get('dia_bp')
@@ -126,13 +98,13 @@ def user_results():
         sys_bp = float(sys_bp)
         dia_bp = float(dia_bp)
     except ValueError:
-        print ('Invalid user id or blood pressure, fix later')
+        print ('Invalid user id or blood pressure')
         return redirect('/input')
     except TypeError:
         pass
 
-    #df = pd.read_csv('/Users/robertheitz/Documents/DataSci/Insight/DuringInsight/DevSetup/FlaskSetup/MyStarterApp/PatientData/patients_all.csv')
-    df = pd.read_csv('/home/ubuntu/patients_all.csv')
+    cwd = os.getcwd()
+    df = pd.read_csv('{}/../Data/patients_all.csv'.format(cwd))
 
     patient_id = np.sort(df['patient'].unique())[patient_id - 1]
     df_patient = df[df['patient'] == patient_id][['systolic', 'diastolic', 'index_time']]

@@ -2,14 +2,14 @@ from sklearn.metrics import mean_squared_error
 import numpy as np
 from helperfunctions import is_high_bp
 import pandas as pd
+import os
 
 def prophet_model(d_input, shift, which_bp, patient_id):
     X, y = d_input['X'], d_input['Y']
     ynow, time_now = d_input['bp'], d_input['now']
 
-    #forecast = pd.read_csv('/Users/robertheitz/Documents/DataSci/Insight/Insight_Project/Insight_Project_Framework/Forecasts/{}_patient{}.csv'.format(which_bp, patient_id))
-    forecast = pd.read_csv('/home/ubuntu/Forecasts/{}_patient{}.csv'.format(which_bp, patient_id))
-    
+    cwd = os.getcwd()
+    forecast = pd.read_csv('{}/../Data/Forecasts/{}_patient{}.csv'.format(cwd, which_bp, patient_id))
 
     ypred_now = forecast['yhat'].iloc[-10]
     yhat = forecast['yhat'].iloc[:-10].values
